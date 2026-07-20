@@ -143,11 +143,47 @@ final class GrowthAuditConfig
         $values = [];
         foreach ($names as $name) {
             $value = getenv($name);
-            if ($value !== false) {
+            if ($value !== false && trim((string) $value) !== '') {
                 $values[$name] = $value;
             }
         }
+
+        // Environment variables always win. GoDaddy's CloudLinux PHP Selector on this
+        // account exposes no env/FPM-pool editor, so anything getenv() didn't supply
+        // falls back to a PHP file kept outside the public document root.
+        $missing = array_values(array_diff($names, array_keys($values)));
+        if ($missing !== []) {
+            $values += self::loadPrivateConfigFile(self::privateConfigPath(), $missing);
+        }
+
         return self::fromArray($values);
+    }
+
+    private static function privateConfigPath(): string
+    {
+        return dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'growth-audit-private' . DIRECTORY_SEPARATOR . 'config.php';
+    }
+
+    /**
+     * @param string[] $missingNames
+     * @return array<string,mixed>
+     */
+    private static function loadPrivateConfigFile(string $path, array $missingNames): array
+    {
+        if (!is_file($path)) {
+            return [];
+        }
+        $loaded = require $path;
+        if (!is_array($loaded)) {
+            throw new GrowthAuditConfigException('Private configuration file did not return an array');
+        }
+        $result = [];
+        foreach ($missingNames as $name) {
+            if (isset($loaded[$name]) && trim((string) $loaded[$name]) !== '') {
+                $result[$name] = $loaded[$name];
+            }
+        }
+        return $result;
     }
 
     private static function validateOrigin(string $origin): void

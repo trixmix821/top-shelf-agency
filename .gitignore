@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 
+# Private Growth Audit config fallback (belongs outside public_html on the
+# server only; must never exist inside the repo working tree)
+growth-audit-private/
+
 # Generated deployment archives
 *.zip
 *.sha256.txt

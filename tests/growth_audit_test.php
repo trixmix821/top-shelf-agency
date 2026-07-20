@@ -115,6 +115,13 @@ function assert_same(mixed $expected, mixed $actual, string $message): void
     }
 }
 
+function reflect_private_static(string $class, string $method): ReflectionMethod
+{
+    $reflection = new ReflectionMethod($class, $method);
+    $reflection->setAccessible(true);
+    return $reflection;
+}
+
 function remove_test_directory(string $directory): void
 {
     if (!is_dir($directory)) {
@@ -241,6 +248,91 @@ $tests['signed bot token'] = function () use ($storageDir): void {
         throw new RuntimeException('Expected a tampered token to fail.');
     } catch (GrowthAuditTokenException $error) {
         assert_true(true, 'Tampered token rejected.');
+    }
+};
+
+$tests['environment fallback: env vars take full precedence'] = function () use ($storageDir): void {
+    $values = test_config_values($storageDir);
+    foreach ($values as $name => $value) {
+        putenv($name . '=' . $value);
+    }
+    try {
+        $config = GrowthAuditConfig::fromEnvironment();
+        assert_same($values['GHL_LOCATION_ID'], $config->ghlLocationId, 'fromEnvironment should read GHL_LOCATION_ID from getenv().');
+        assert_same($values['GROWTH_AUDIT_ALLOWED_ORIGIN'], $config->allowedOrigin, 'fromEnvironment should read the allowed origin from getenv().');
+    } finally {
+        foreach (array_keys($values) as $name) {
+            putenv($name);
+        }
+    }
+};
+
+$tests['environment fallback: missing vars fail closed when no private file exists'] = function () use ($storageDir): void {
+    $values = test_config_values($storageDir);
+    unset($values['GHL_PIPELINE_ID']);
+    foreach ($values as $name => $value) {
+        putenv($name . '=' . $value);
+    }
+    try {
+        GrowthAuditConfig::fromEnvironment();
+        throw new RuntimeException('Expected missing configuration to fail when no private config file exists.');
+    } catch (GrowthAuditConfigException $error) {
+        assert_true(str_contains($error->getMessage(), 'GHL_PIPELINE_ID'), 'Missing variable name should be reported.');
+    } finally {
+        foreach (array_keys($values) as $name) {
+            putenv($name);
+        }
+        putenv('GHL_PIPELINE_ID');
+    }
+};
+
+$tests['private config file: merges only missing names, ignores present ones'] = function (): void {
+    $fixtureDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'growth-audit-private-fixture-' . bin2hex(random_bytes(5));
+    mkdir($fixtureDir, 0700, true);
+    $fixturePath = $fixtureDir . DIRECTORY_SEPARATOR . 'config.php';
+    file_put_contents($fixturePath, "<?php\nreturn [\n" .
+        "    'GHL_PIPELINE_ID' => 'from-file-pipeline',\n" .
+        "    'GHL_PIPELINE_STAGE_ID' => 'from-file-stage',\n" .
+        "    'GHL_LOCATION_ID' => 'should-not-be-used',\n" .
+        "];\n");
+
+    try {
+        $method = reflect_private_static(GrowthAuditConfig::class, 'loadPrivateConfigFile');
+        $result = $method->invoke(null, $fixturePath, ['GHL_PIPELINE_ID', 'GHL_PIPELINE_STAGE_ID']);
+        assert_same(
+            ['GHL_PIPELINE_ID' => 'from-file-pipeline', 'GHL_PIPELINE_STAGE_ID' => 'from-file-stage'],
+            $result,
+            'Only the requested missing names should be returned.'
+        );
+        assert_true(!isset($result['GHL_LOCATION_ID']), 'Names not in the missing list must never be pulled from the private file.');
+    } finally {
+        remove_test_directory($fixtureDir);
+    }
+};
+
+$tests['private config file: absent file returns no values'] = function (): void {
+    $method = reflect_private_static(GrowthAuditConfig::class, 'loadPrivateConfigFile');
+    $missingPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'growth-audit-private-fixture-absent-' . bin2hex(random_bytes(5)) . DIRECTORY_SEPARATOR . 'config.php';
+    $result = $method->invoke(null, $missingPath, ['GHL_PIPELINE_ID']);
+    assert_same([], $result, 'A missing private config file should yield no values, preserving fail-closed behavior.');
+};
+
+$tests['private config file: malformed contents throw'] = function (): void {
+    $fixtureDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'growth-audit-private-fixture-' . bin2hex(random_bytes(5));
+    mkdir($fixtureDir, 0700, true);
+    $fixturePath = $fixtureDir . DIRECTORY_SEPARATOR . 'config.php';
+    file_put_contents($fixturePath, "<?php\nreturn 'not-an-array';\n");
+
+    try {
+        $method = reflect_private_static(GrowthAuditConfig::class, 'loadPrivateConfigFile');
+        try {
+            $method->invoke(null, $fixturePath, ['GHL_PIPELINE_ID']);
+            throw new RuntimeException('Expected a non-array private config file to be rejected.');
+        } catch (GrowthAuditConfigException $error) {
+            assert_true(true, 'Malformed private config file correctly rejected.');
+        }
+    } finally {
+        remove_test_directory($fixtureDir);
     }
 };
 

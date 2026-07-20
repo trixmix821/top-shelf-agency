@@ -1,4 +1,4 @@
-/* Owner review notes: bronze FAQ titles, larger homepage titles, dark-first UI. */
+/* Owner review notes: bronze FAQ titles, dark-first UI. */
 .faq summary h2{
   color:var(--brass);
   transition:color .18s ease;
@@ -6,14 +6,4 @@
 .faq summary:hover h2,
 .faq details[open] summary h2{
   color:var(--brass-strong);
-}
-.home-page main section:not(.hero) h2{
-  font-size:clamp(2.05rem,3.8vw,3.15rem);
-}
-.home-page .answer-summary .eyebrow{
-  font-size:.82rem;
-  letter-spacing:.085em;
-}
-.home-page .answer-summary h2{
-  font-size:clamp(2.2rem,4.2vw,3.4rem);
 }

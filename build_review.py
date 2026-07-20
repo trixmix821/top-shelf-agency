@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date
 from pathlib import Path
 import re
 import runpy
@@ -14,14 +14,12 @@ ASSETS = ROOT / "assets"
 
 runpy.run_path(str(ROOT / "build_seo.py"), run_name="__main__")
 
-REVIEW_DATE = datetime.fromtimestamp(
-    (ROOT / "build_review.py").stat().st_mtime, tz=timezone.utc
-).date().isoformat()
+REVIEW_DATE = date.today().isoformat()
 
 OLD_THEME_INIT = "<script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>"
 NEW_THEME_INIT = "<script>(function(){var r=document.documentElement,t=null;try{t=localStorage.getItem('top-shelf-theme')||localStorage.getItem('theme')}catch(e){}r.setAttribute('data-theme',t==='light'?'light':'dark')})()</script>"
 
-REVIEW_CSS = """/* Owner review notes: bronze FAQ titles, larger homepage titles, dark-first UI. */
+REVIEW_CSS = """/* Owner review notes: bronze FAQ titles, dark-first UI. */
 .faq summary h2{
   color:var(--brass);
   transition:color .18s ease;
@@ -29,16 +27,6 @@ REVIEW_CSS = """/* Owner review notes: bronze FAQ titles, larger homepage titles
 .faq summary:hover h2,
 .faq details[open] summary h2{
   color:var(--brass-strong);
-}
-.home-page main section:not(.hero) h2{
-  font-size:clamp(2.05rem,3.8vw,3.15rem);
-}
-.home-page .answer-summary .eyebrow{
-  font-size:.82rem;
-  letter-spacing:.085em;
-}
-.home-page .answer-summary h2{
-  font-size:clamp(2.2rem,4.2vw,3.4rem);
 }
 """
 

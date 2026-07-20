@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date
 from html import escape
 import json
 from pathlib import Path
@@ -22,28 +22,16 @@ LOGO_IMAGE = f"{SITE}/assets/logo/mark-512.png"
 
 runpy.run_path(str(ROOT / "build_release.py"), run_name="__main__")
 
-source_files = [
-    ROOT / name
-    for name in (
-        "build_pages.py",
-        "build_site.py",
-        "build_final.py",
-        "build_release.py",
-        "build_seo.py",
-    )
-]
-LAST_MODIFIED = datetime.fromtimestamp(
-    max(path.stat().st_mtime for path in source_files), tz=timezone.utc
-).date().isoformat()
+LAST_MODIFIED = date.today().isoformat()
 
 
 PAGES = {
     "index.html": {
         "url": "/",
-        "title": "Contractor Lead Follow-Up in North Jersey | Top Shelf Agency",
+        "title": "Growth Partner for Contractors and Home-Service Businesses | Top Shelf Agency",
         "description": (
-            "Top Shelf helps North Jersey plumbers and electricians capture missed "
-            "opportunities, follow up faster, earn legitimate reviews, and organize leads."
+            "Top Shelf helps electricians, plumbers, roofers, and general contractors turn "
+            "more inquiries into booked work through one connected customer journey system."
         ),
         "type": "WebPage",
     },
@@ -155,8 +143,6 @@ FAQ = [
 ]
 
 
-HOME_SUMMARY = '''<section class="surface answer-summary" aria-labelledby="top-shelf-at-a-glance"><div class="wrap"><p class="eyebrow">Top Shelf at a glance</p><h2 id="top-shelf-at-a-glance">A founder-led growth systems partner for small North Jersey contractors.</h2><div class="grid four"><article><span>Who it is for</span><h3>Plumbers and electricians</h3><p>Small local companies, often with one to five employees and an owner who still works in the field.</p></article><article><span>What it improves</span><h3>The customer journey</h3><p>Missed-call response, lead follow-up, estimate next steps, legitimate review requests, and lead organization.</p></article><article><span>How it starts</span><h3>A free Growth Audit</h3><p>Top Shelf first verifies what already works, then identifies the highest-value practical opportunity.</p></article><article><span>Where it serves</span><h3>Northern New Jersey</h3><p>Founder-led support for plumbing and electrical companies across North Jersey.</p></article></div></div></section>'''
-
 ABOUT_TRANSPARENCY = f'''<section class="surface" aria-labelledby="site-transparency"><div class="wrap"><p class="eyebrow">Website transparency</p><h2 id="site-transparency">A named founder and clearly bounded claims.</h2><p>Top Shelf Agency LLC names Stephen Wierzbicki as founder and primary contact. This site explains the Contractor Growth Package and free Growth Audit without publishing unverified pricing, client results, guarantees, or a public phone number.</p><small>Site content last updated {LAST_MODIFIED}.</small></div></section>'''
 
 
@@ -168,8 +154,9 @@ def organization_graph() -> list[dict]:
         "legalName": "Top Shelf Agency LLC",
         "url": f"{SITE}/",
         "description": (
-            "A founder-led North Jersey marketing agency that helps small plumbing and "
-            "electrical companies improve lead follow-up, review requests, and organization."
+            "A growth partner for contractors and established home-service businesses, "
+            "connecting online visibility, lead response, follow-up, booking, and reviews "
+            "into one customer journey system."
         ),
         "email": EMAIL,
         "logo": {
@@ -188,6 +175,8 @@ def organization_graph() -> list[dict]:
             "Missed-call response",
             "Legitimate customer review requests",
             "Lead organization",
+            "Speed to lead",
+            "Estimate follow-up",
         ],
         "contactPoint": {
             "@type": "ContactPoint",
@@ -364,12 +353,6 @@ def optimize_page(path: Path, meta: dict) -> None:
         f'<script type="application/ld+json">{structured}</script>',
     )
 
-    if meta["url"] == "/":
-        marker = "</aside></div></section>"
-        if marker not in html:
-            raise RuntimeError("Homepage hero marker not found")
-        html = html.replace(marker, marker + HOME_SUMMARY, 1)
-
     if meta["url"] == "/about/":
         marker = '<section class="final">'
         if marker not in html:
@@ -437,13 +420,13 @@ Sitemap: {SITE}/sitemap.xml
 
 llms = f"""# Top Shelf Agency LLC
 
-> Founder-led growth and lead follow-up systems for small plumbing and electrical companies in Northern New Jersey.
+> A growth partner for contractors and established home-service businesses in Northern New Jersey, connecting visibility, response, follow-up, booking, and reviews into one system.
 
 ## Canonical pages
 
 - Home: {SITE}/
 - Contractor Growth Package: {SITE}/growth-package/
-- Free Business Growth Audit: {SITE}/growth-audit/
+- Opportunity Snapshot (Growth Audit): {SITE}/growth-audit/
 - How it works: {SITE}/how-it-works/
 - About Stephen Wierzbicki: {SITE}/about/
 - FAQ: {SITE}/faq/
@@ -454,10 +437,11 @@ llms = f"""# Top Shelf Agency LLC
 - Legal name: Top Shelf Agency LLC
 - Founder: Stephen Wierzbicki
 - Service area: Northern New Jersey
-- Primary audience: Small plumbing and electrical companies, often one to five employees
+- Release date: {LAST_MODIFIED}
+- Primary audience: Established electricians, plumbers, roofers, and general contractors, often one to five employees
 - Contact email: {EMAIL}
 - Primary offer: Contractor Growth Package
-- First step: Free Business Growth Audit
+- First step: Opportunity Snapshot, a diagnostic review of visibility, response speed, follow-up, and reviews
 
 ## Claim boundaries
 

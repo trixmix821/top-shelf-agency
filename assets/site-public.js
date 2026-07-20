@@ -6,6 +6,12 @@
   var menuButton=document.getElementById("navToggle");
   var themeButton=document.getElementById("themeToggle");
 
+  document.querySelectorAll(".ts-primary-nav a,.mobile-menu a").forEach(function(link){
+    var linkPath=new URL(link.href,location.href).pathname.replace(/\/$/,"")||"/";
+    var currentPath=location.pathname.replace(/\/$/,"")||"/";
+    if(linkPath===currentPath)link.setAttribute("aria-current","page");
+  });
+
   function updateThemeLabel(){
     if(themeButton){
       themeButton.setAttribute(
@@ -41,8 +47,21 @@
     menu.querySelectorAll("a").forEach(function(link){
       link.addEventListener("click",function(){
         menu.classList.remove("open");
-        if(menuButton)menuButton.setAttribute("aria-expanded","false");
+        if(menuButton){
+          menuButton.setAttribute("aria-expanded","false");
+          menuButton.setAttribute("aria-label","Open menu");
+        }
       });
+    });
+  }
+  if(menuButton&&menu){
+    document.addEventListener("keydown",function(event){
+      if(event.key==="Escape"&&menu.classList.contains("open")){
+        menu.classList.remove("open");
+        menuButton.setAttribute("aria-expanded","false");
+        menuButton.setAttribute("aria-label","Open menu");
+        menuButton.focus();
+      }
     });
   }
 

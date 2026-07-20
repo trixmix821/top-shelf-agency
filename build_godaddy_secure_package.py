@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from hashlib import sha256
 from html.parser import HTMLParser
 import json
@@ -207,9 +208,20 @@ php_source = "\n".join(
 if re.search(r"(?:test-token-not-real|PRIVATE_INTEGRATION_TOKEN\s*=\s*['\"][^'\"]+)", php_source):
     raise RuntimeError("A credential-like value was found in deployable PHP source")
 
+release_date = date.today()
+zip_timestamp = (release_date.year, release_date.month, release_date.day, 0, 0, 0)
+
 with zipfile.ZipFile(ARCHIVE, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
     for file in public_files:
-        bundle.write(file, file.relative_to(ROOT).as_posix())
+        info = zipfile.ZipInfo(file.relative_to(ROOT).as_posix(), date_time=zip_timestamp)
+        info.create_system = 3
+        info.external_attr = 0o100644 << 16
+        bundle.writestr(
+            info,
+            file.read_bytes(),
+            compress_type=zipfile.ZIP_DEFLATED,
+            compresslevel=9,
+        )
 
 with zipfile.ZipFile(ARCHIVE, "r") as bundle:
     bad = bundle.testzip()

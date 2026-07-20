@@ -1,12 +1,12 @@
 # Top Shelf Agency LLC
 
-> Founder-led growth and lead follow-up systems for small plumbing and electrical companies in Northern New Jersey.
+> A growth partner for contractors and established home-service businesses in Northern New Jersey, connecting visibility, response, follow-up, booking, and reviews into one system.
 
 ## Canonical pages
 
 - Home: https://topshelfagency.biz/
 - Contractor Growth Package: https://topshelfagency.biz/growth-package/
-- Free Business Growth Audit: https://topshelfagency.biz/growth-audit/
+- Opportunity Snapshot (Growth Audit): https://topshelfagency.biz/growth-audit/
 - How it works: https://topshelfagency.biz/how-it-works/
 - About Stephen Wierzbicki: https://topshelfagency.biz/about/
 - FAQ: https://topshelfagency.biz/faq/
@@ -17,10 +17,11 @@
 - Legal name: Top Shelf Agency LLC
 - Founder: Stephen Wierzbicki
 - Service area: Northern New Jersey
-- Primary audience: Small plumbing and electrical companies, often one to five employees
+- Release date: 2026-07-20
+- Primary audience: Established electricians, plumbers, roofers, and general contractors, often one to five employees
 - Contact email: hello@topshelfagency.biz
 - Primary offer: Contractor Growth Package
-- First step: Free Business Growth Audit
+- First step: Opportunity Snapshot, a diagnostic review of visibility, response speed, follow-up, and reviews
 
 ## Claim boundaries
 

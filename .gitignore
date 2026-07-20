@@ -1,0 +1,40 @@
+# Real environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Generated deployment archives
+*.zip
+*.sha256.txt
+
+# Bundled local dev runtime (portable PHP binary + its source zip)
+.tools/
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Dependency folders
+node_modules/
+vendor/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup / duplicate copies
+*.bak
+*.orig
+* - Copy.*
+* copy.*

@@ -1,0 +1,9 @@
+/* Fresh owner-review override; versioned to avoid stale preview caches. */
+.faq details > summary h2 {
+  color: #c9a063 !important;
+  transition: color .18s ease;
+}
+.faq details > summary:hover h2,
+.faq details[open] > summary h2 {
+  color: #e0b578 !important;
+}

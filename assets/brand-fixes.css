@@ -1,0 +1,9 @@
+/* Final specificity fixes after the original brand stylesheet. */
+.nav-links .btn,
+.nav-links .btn:visited{
+  color:var(--fixed-ink);
+}
+:root[data-theme="light"] .nav-links .btn,
+:root[data-theme="light"] .nav-links .btn:visited{
+  color:var(--fixed-ink);
+}

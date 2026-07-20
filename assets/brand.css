@@ -278,13 +278,6 @@
     white-space:nowrap;
   }
   .btn:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
-  .btn-primary{
-    background:var(--brass);
-    color:var(--fixed-paper);
-    box-shadow:0 1px 0 0 rgba(0,0,0,0.15) inset, 0 8px 20px -12px rgba(124,90,30,0.7);
-  }
-  .btn-primary:hover{ background:var(--brass-strong); transform:translateY(-1px); }
-  .btn-primary:active{ background:var(--brass-strong); transform:translateY(0); }
   .btn[target="_blank"]::after,
   .prose a[target="_blank"]::after,
   .footnotes a[target="_blank"]::after{
@@ -294,14 +287,6 @@
     font-size:0.85em;
     vertical-align:middle;
   }
-  .btn-ghost:active{ border-color:var(--brass); color:var(--brass); }
-  .btn-ghost{
-    background:transparent;
-    color:var(--ink);
-    border-color:var(--line);
-  }
-  .btn-ghost:hover{ border-color:var(--brass); color:var(--brass); }
-  .btn-block{ width:100%; }
 
   /* ---------- Hero ---------- */
   .hero{
@@ -715,7 +700,6 @@
     .reveal{ opacity:1; transform:none; transition:none; }
     .item:hover, .item:active{ transform:none; }
     .link-card:hover, .link-card:active{ transform:none; }
-    .btn-primary:hover, .btn-primary:active{ transform:none; }
   }
 
   /* ---------- Skip link ---------- */
